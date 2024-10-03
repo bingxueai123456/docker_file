@@ -1,0 +1,67 @@
+version: '3.8'
+networks:
+  ice-net:
+    driver: bridge
+
+
+
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: test
+    ports:
+      - "3307:3306"
+    volumes:
+      - F:\\docker_volume\\mysql\\data:/var/lib/mysql/
+      - F:\\docker_volume\\mysql\\conf:/etc/mysql/conf.d/
+      - F:\\docker_volume\\mysql\\logs:/var/log/mysql/
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    privileged: true
+    networks:
+      - ice-net
+    dns: 114.114.114.114
+  redis:
+    image: redis:6.2.12
+    container_name: redis
+    environment:
+      TZ: Asia/Shanghai
+      REDIS_PASSWORD: 123456
+    ports:
+      - "6379:6379"
+    volumes:
+      - F:\\docker_volume\\redis\\data:/redis/data
+      - F:\\docker_volume\\redis\\conf:/redis/config
+    command: redis-server /redis/config/redis.conf
+    privileged: true
+    networks:
+      - ice-net
+    dns: 114.114.114.114
+  nacos:
+    image: nacos/nacos-server:v2.4.2
+    container_name: nacos-standalone
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - NACOS_AUTH_IDENTITY_KEY=serverIdentity
+      - NACOS_AUTH_IDENTITY_VALUE=security
+      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
+    volumes:
+      - F:\\docker_volume\\nacos\\logs:/home/nacos/logs
+    privileged: true
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    networks:
+      - ice-net
+    dns: 114.114.114.114
+      
+    
